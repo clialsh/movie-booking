@@ -1,4 +1,3 @@
-
 package movie.external;
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -8,13 +7,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Date;
 
-@FeignClient(name="payment", url="http://localhost:8082")
+@FeignClient(name="gift", url="http://localhost:8085")
 public interface PaymentService {
 
-    @RequestMapping(method= RequestMethod.POST, path="/payments")
-    public void pay(@RequestBody Payment payment);
+    @RequestMapping(method= RequestMethod.POST, path="/apply")
+    public void apply(@RequestBody Payment payment);
     
-    @RequestMapping(method= RequestMethod.POST, path="/cancellations")
-    public void cancel(@RequestBody Payment payment);
+    
 
 }

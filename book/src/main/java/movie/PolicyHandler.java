@@ -54,4 +54,42 @@ public class PolicyHandler{
         }
     };
 
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverTaken_(@Payload Taken taken){
+
+        
+        if(taken.isMe()){
+
+            System.out.println("======================================");
+            System.out.println("**** listener  : " + taken.toJson());
+            System.out.println("======================================");
+            bookRepository.findById(taken.getBookingId()).ifPresent((book)->{
+                book.setStatus("GiftTakingComplete");
+                bookRepository.save(book);
+            });
+
+        }
+    };
+
+
+
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverApplied_(@Payload Applied applied){
+
+        
+        if(applied.isMe()){
+
+            System.out.println("======================================");
+            System.out.println("**** listener  : " + applied.toJson());
+            System.out.println("======================================");
+            bookRepository.findById(applied.getBookingId()).ifPresent((book)->{
+                book.setStatus("GiftApplied");
+                bookRepository.save(book);
+            });
+
+        }
+    };
+
+
 }

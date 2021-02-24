@@ -31,11 +31,26 @@ public class Ticket {
     public void onPostUpdate(){
 
         if("Printed".equals(status)){
-            Printed printed = new Printed();
-            BeanUtils.copyProperties(this, printed);
-            printed.setStatus("Printed");
-            printed.publishAfterCommit();
+             Printed printed = new Printed();
+             BeanUtils.copyProperties(this, printed);
+            // printed.setStatus("Printed");
+            // printed.publishAfterCommit();
+            
 
+            movie.external.Gift gift = new movie.external.Gift();
+            System.out.println("*********************");
+            System.out.println("프린트 이벤트 발생");
+            System.out.println("*********************");
+
+            
+
+            // mappings goes here
+
+            gift.setBookingId(printed.getId());
+            gift.setStatus("Printed");
+            TicketApplication.applicationContext.getBean(movie.external.GiftService.class)
+            .apply(gift);
+            
         }
 
 
