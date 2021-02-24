@@ -80,14 +80,6 @@ phases:
                   image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/skccuser14-$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
                   ports:
                     - containerPort: 8080
-                  livenessProbe:
-                    httpGet:
-                      path: /abc
-                      port: 8080
-                    initialDelaySeconds: 120
-                    timeoutSeconds: 2
-                    periodSeconds: 5
-                    failureThreshold: 5
         EOF
 cache:
   paths:

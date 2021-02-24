@@ -496,7 +496,7 @@ readinessProbe:
     failureThreshold: 5
 
 ```
-<img width="1114" alt="스크린샷 2021-02-23 오후 1 49 30" src="https://user-images.githubusercontent.com/28583602/108803416-f4c97e00-75dd-11eb-9663-74bcaf27ddbf.png">
+![livenessProbe](https://user-images.githubusercontent.com/25216200/109046697-6279c500-7718-11eb-891c-e2fe4d5ec2c7.png)
 
 ## Config Map
 

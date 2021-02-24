@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.Date;
 
-@FeignClient(name="gift", url="http://localhost:8085")
+@FeignClient(name="gift", url="http://gift:8080")
 public interface GiftService {
 
     @RequestMapping(method= RequestMethod.POST, path="/gifts")
