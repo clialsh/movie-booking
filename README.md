@@ -477,7 +477,8 @@ readinessProbe:
   failureThreshold: 10
 
 ```
-<img width="1114" alt="스크린샷 2021-02-23 오후 1 49 07" src="https://user-images.githubusercontent.com/28583602/108803393-e8ddbc00-75dd-11eb-964d-cfd5d78cdfdd.png">
+![Readiness](https://user-images.githubusercontent.com/25216200/109042980-28a6bf80-7714-11eb-977f-9464995946ec.png)
+
 
 
 ## Self-healing(Liveness Probe)
