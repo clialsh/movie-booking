@@ -3,7 +3,7 @@ package movie;
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
 import java.util.List;
-import java.util.Random;
+
 
 @Entity
 @Table(name="Gift_table")
@@ -28,42 +28,20 @@ public class Gift {
     
     @PrePersist
     public void onPrePersist(){
-        try {
-            Thread.currentThread().sleep((long) (400 + Math.random() * 220));
-            System.out.println("#################");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Applied applied = new Applied();
-        BeanUtils.copyProperties(this, applied);
-        
-        Random random = new Random();
-        Integer randomValue = random.nextInt(3);
-        switch (randomValue) {	
-            case 0:	
-            	
-                applied.setName("Americano");
-                applied.setGiftCode("G000");
-                break;
-            case 1:		
-                applied.setName("CafeLatte");
-                applied.setGiftCode("G001");
-                break; 
-            case 2:
-                applied.setName("CafeMocha");
-                applied.setGiftCode("G002");
-                break;
-            case 3:
-                applied.setName("Cappuccino");
-                applied.setGiftCode("G003");
-                break;    
-            default:
-                applied.setName("Americano");
-                applied.setGiftCode("G000");
-        };
-        applied.setStatus("GiftApplied");
+        // try {
+        //     Thread.currentThread().sleep((long) (400 + Math.random() * 220));
+        //     System.out.println("#################");
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // }
 
-        applied.publishAfterCommit();
+        if("GiftApplied".equals(status)){
+            Applied applied = new Applied();
+            BeanUtils.copyProperties(this, applied);
+            applied.publishAfterCommit();
+
+        }
+        
 
 
     }

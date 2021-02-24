@@ -3,6 +3,7 @@ package movie;
 import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @Table(name="Ticket_table")
@@ -33,8 +34,8 @@ public class Ticket {
         if("Printed".equals(status)){
              Printed printed = new Printed();
              BeanUtils.copyProperties(this, printed);
-            // printed.setStatus("Printed");
-            // printed.publishAfterCommit();
+             printed.setStatus("Printed");
+             printed.publishAfterCommit();
             
 
             movie.external.Gift gift = new movie.external.Gift();
@@ -46,8 +47,32 @@ public class Ticket {
 
             // mappings goes here
 
-            gift.setBookingId(printed.getId());
-            gift.setStatus("Printed");
+            gift.setBookingId(printed.getBookingId());
+            Random random = new Random();
+            Integer randomValue = random.nextInt(3);
+            switch (randomValue) {  
+                case 0: 
+                    
+                    gift.setName("Americano");
+                    gift.setGiftCode("G000");
+                    break;
+                case 1:     
+                    gift.setName("CafeLatte");
+                    gift.setGiftCode("G001");
+                    break; 
+                case 2:
+                    gift.setName("CafeMocha");
+                    gift.setGiftCode("G002");
+                    break;
+                case 3:
+                    gift.setName("Cappuccino");
+                    gift.setGiftCode("G003");
+                    break;    
+                default:
+                    gift.setName("Americano");
+                    gift.setGiftCode("G000");
+            };
+            gift.setStatus("GiftApplied");
             TicketApplication.applicationContext.getBean(movie.external.GiftService.class)
             .apply(gift);
             

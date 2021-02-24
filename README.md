@@ -61,7 +61,8 @@ MSA/DDD/Event Storming/EDA 를 포괄하는 분석/설계/구현/운영 전단�
 
 # 구현:
 
-분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트로 구현하였다. 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 (각자의 포트넘버는 8081 ~ 8084 이다)
+분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 각 BC별로 대변되는 마이크로 서비스들을 스프링부트로 구현하였다. 구현한 각 서비스를 로컬에서 실행하는 방법은 아래와 같다 
+(각자의 포트넘버는 gateway 외에 8081 ~ 8085 이다)
 
 ```
 cd book
@@ -78,57 +79,79 @@ mvn srping-boot:run
 
 cd gateway
 mvn spring-boot:run
+
+cd gift
+mvn spring-boot:run
 ```
 
 ## 동기식 호출
 
-분석단계에서의 조건 중 하나로 예매(book)->결제(pay) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
+분석단계에서의 조건 중 하나로 예매(book)->결제(pay) 간의 호출과 추가적으로 구현 된 티켓 발권(ticket)->경품당첨(gift) 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다.
 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다.
 
-- 결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현
+- 아래는 경품 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현
 
 ```
-# PaymentService.java
+# GiftService.java
 
 package movie.external;
 
-@FeignClient(name="payment", url="http://localhost:8082")
-public interface PaymentService {
+@FeignClient(name="gift", url="http://localhost:8085")
+public interface GiftService {
 
-    @RequestMapping(method= RequestMethod.POST, path="/payments")
-    public void pay(@RequestBody Payment payment);
-
-    @RequestMapping(method= RequestMethod.POST, path="/cancellations")
-    public void cancel(@RequestBody Payment payment);
-
+    @RequestMapping(method= RequestMethod.POST, path="/gifts")
+    public void apply(@RequestBody Gift gift);
 }
 ```
 
-- 예매 직후(@PostPersist) 결제를 요청하도록 처리
+- 티켓 발권 직후(@PostPersist) 경품이 당첨되어 부여되도록 요청 처리
 
 ```
-# Book.java (Entity)
+# Ticket.java (Entity)
 
-    @PostPersist
-    public void onPostPersist(){
+    @PostUpdate
+    public void onPostUpdate(){
 
-        Booked booked = new Booked();
-        BeanUtils.copyProperties(this, booked);
-        
-        movie.external.Payment payment = new movie.external.Payment();
+        if("Printed".equals(status)){
+             Printed printed = new Printed();
+             BeanUtils.copyProperties(this, printed);
+             printed.setStatus("Printed");
+             printed.publishAfterCommit();
+            
+            movie.external.Gift gift = new movie.external.Gift();
+            
+            // mappings goes here
 
-        System.out.println("*********************");
-        System.out.println("결제 이벤트 발생");
-        System.out.println("*********************");
-
-        // mappings goes here
-        payment.setBookingId(booked.getId());
-        payment.setStatus("Paid");
-        payment.setTotalPrice(booked.getTotalPrice());
-        BookApplication.applicationContext.getBean(movie.external.PaymentService.class)
-            .pay(payment);
-	    
-	booked.publishAfterCommit();
+            gift.setBookingId(printed.getBookingId());
+            Random random = new Random();
+            Integer randomValue = random.nextInt(3);
+            switch (randomValue) {  
+                case 0: 
+                    
+                    gift.setName("Americano");
+                    gift.setGiftCode("G000");
+                    break;
+                case 1:     
+                    gift.setName("CafeLatte");
+                    gift.setGiftCode("G001");
+                    break; 
+                case 2:
+                    gift.setName("CafeMocha");
+                    gift.setGiftCode("G002");
+                    break;
+                case 3:
+                    gift.setName("Cappuccino");
+                    gift.setGiftCode("G003");
+                    break;    
+                default:
+                    gift.setName("Americano");
+                    gift.setGiftCode("G000");
+            };
+            gift.setStatus("GiftApplied");
+            TicketApplication.applicationContext.getBean(movie.external.GiftService.class)
+            .apply(gift);
+            
+        }
     }
 ```
 
