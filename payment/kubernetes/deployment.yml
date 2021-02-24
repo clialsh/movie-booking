@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: payment
-          image: 496278789073.dkr.ecr.ap-northeast-2.amazonaws.com/skteam03-payment:v13
+          image: 496278789073.dkr.ecr.ap-northeast-2.amazonaws.com/skccuser14-payment:v1
           resources:
             requests:
               cpu: "300m"
