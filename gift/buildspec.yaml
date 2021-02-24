@@ -82,7 +82,7 @@ phases:
                     - containerPort: 8080
                   livenessProbe:
                     httpGet:
-                      path: /actuator/health
+                      path: /abc
                       port: 8080
                     initialDelaySeconds: 120
                     timeoutSeconds: 2
