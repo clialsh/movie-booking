@@ -72,7 +72,7 @@ public class Ticket {
                     gift.setName("Americano");
                     gift.setGiftCode("G000");
             };
-            gift.setStatus("GiftApplied");
+            gift.setStatus("PrintedAndGiftApplied");
             TicketApplication.applicationContext.getBean(movie.external.GiftService.class)
             .apply(gift);
             

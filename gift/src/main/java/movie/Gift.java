@@ -52,7 +52,7 @@ public class Gift {
         if("Taken".equals(status)){
             Taken taken = new Taken();
             BeanUtils.copyProperties(this, taken);
-            taken.setStatus("TakenGift");
+            taken.setStatus("PritedAndTakenGift");
             taken.publishAfterCommit();
         }
         

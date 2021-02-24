@@ -158,9 +158,9 @@ public interface GiftService {
 - 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 예매도 못받는다는 것을 확인
 
 
-- 결제 (pay) 서비스를 잠시 내려놓음 (ctrl+c)
+- 경품 (gift) 서비스를 잠시 내려놓음 (ctrl+c)
 
-1. 예매처리
+1. 경품처리
 
 <img width="688" alt="스크린샷 2021-02-23 오전 11 16 37" src="https://user-images.githubusercontent.com/28583602/108794189-ab226880-75c8-11eb-8692-cb06effe8bb2.png">
 
@@ -366,14 +366,13 @@ http http://localhost:8088/mypages/1
 각 구현체들은 Amazon ECR(Elastic Container Registry)에 구성되었고, 사용한 CI/CD 플랫폼은 AWS Codebuild며, pipeline build script 는 각 프로젝트 폴더 이하에 buildspec.yml 에 포함되었다. 
 
 ```
-# ticket/buildspec.yaml
+# gift/buildspec.yaml
 version: 0.2
 
 env:
   variables:
-    _PROJECT_NAME: "ticket"
-    _PROJECT_DIR: "ticket"
-    CODEBUILD_RESOLVED_SOURCE_VERSION: "v3"
+    _PROJECT_NAME: "gift"
+    _PROJECT_DIR: "gift"
 
 phases:
   install:
@@ -400,11 +399,11 @@ phases:
       - echo Building the Docker image...
       - cd $_PROJECT_DIR
       - mvn package -Dmaven.test.skip=true
-      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/skteam03-$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION  .
+      - docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/skccuser14-$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION  .
   post_build:
     commands:
       - echo Pushing the Docker image...
-      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/skteam03-$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/skccuser14-$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - echo connect kubectl
       - kubectl config set-cluster k8s --server="$KUBE_URL" --insecure-skip-tls-verify=true
       - kubectl config set-credentials admin --token="$KUBE_TOKEN"
@@ -447,7 +446,7 @@ phases:
             spec:
               containers:
                 - name: $_PROJECT_NAME
-                  image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/skteam03-$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+                  image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/skccuser14-$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
                   ports:
                     - containerPort: 8080
         EOF
@@ -457,12 +456,12 @@ cache:
 ```
 
 - 서비스 이미지
-<img width="1655" alt="aws_ecr_team" src="https://user-images.githubusercontent.com/60732832/108799930-0ce8cf80-75d5-11eb-97e9-3e47f8a73595.png">
+![repository](https://user-images.githubusercontent.com/25216200/109039291-f4c99b00-770f-11eb-834e-a4fed13e1434.png)
 
 - Pipeline
 
-![aws_team_codebuild](https://user-images.githubusercontent.com/60732832/108794185-a958a500-75c8-11eb-9a99-8d6129053774.png)
 
+![Codebild](https://user-images.githubusercontent.com/25216200/109038903-91d80400-770f-11eb-8cae-237a082b0b99.png)
 ## Zero-downtime deploy(Readiness Probe)
 
 - buildspec.yaml 파일에 Readiness Probe 추가
