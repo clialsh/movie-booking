@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gift
+  labels:
+    app: gift
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gift
+  template:
+    metadata:
+      labels:
+        app: gift
+    spec:
+      containers:
+        - name: gift
+          image: 496278789073.dkr.ecr.ap-northeast-2.amazonaws.com/skccuser14-gift:v1
+          ports:
+            - containerPort: 8080
