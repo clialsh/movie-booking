@@ -57,7 +57,7 @@ MSA/DDD/Event Storming/EDA 를 포괄하는 분석/설계/구현/운영 전단�
 
 ## 헥사고날 아키텍처 다이어그램 도출
 
-![hexa3](https://user-images.githubusercontent.com/74696451/108833671-805c0280-7610-11eb-9973-26e166829676.png)
+![헥사고널](https://user-images.githubusercontent.com/25216200/109097475-bdd0a500-7762-11eb-80ba-cde18cfda3a6.png)
 
 # 구현:
 
@@ -317,6 +317,9 @@ http PATCH http://localhost:8088/tickets/2 status="Printed"
 # 예매 상태 확인
 http http://localhost:8088/books/3
 
+# 경품 상태 확인
+http http://localhost:8088/gifts/2
+
 ```
 ![avg](https://user-images.githubusercontent.com/25216200/109093624-020c7700-775c-11eb-86ea-4dc099e09c8d.png)
 
@@ -324,6 +327,7 @@ http http://localhost:8088/books/3
 
 ![avg_gift](https://user-images.githubusercontent.com/25216200/109093960-9971ca00-775c-11eb-9cdd-57f747f5dcb9.png)
 
+![avg_gift2](https://user-images.githubusercontent.com/25216200/109094591-93c8b400-775d-11eb-9586-ee7273ce5158.png)
 ## Mypage
 
 - 고객은 예매 상태를 Mypage에서 확인할 수 있다.
@@ -332,18 +336,21 @@ http http://localhost:8088/books/3
 
 ```
 # book 서비스의 예매처리
-http POST http://localhost:8088/books qty=2 movieName="soul" seat="1A,2B" totalPrice=10000
+http POST http://localhost:8088/books qty=2 movieName="Spiderman" seat="10A,10B" totalPrice=10000
 
-# ticket 서비스의 출력처리
+# ticket 서비스의 출력처리 및 경품 부여
 http PATCH http://localhost:8088/tickets/1 status="Printed"
+
+# gift 서비스의 경품 수령
+http PATCH http://localhost:8088/gifts/1 status="Taken"
 
 # Mypage에서 상태 확인
 http http://localhost:8088/mypages/1
 
 ```
 
-<img width="885" alt="스크린샷 2021-02-23 오후 1 33 46" src="https://user-images.githubusercontent.com/28583602/108802487-c34fb300-75db-11eb-8be8-1ff696dd8563.png">
-<img width="1099" alt="스크린샷 2021-02-23 오후 1 34 36" src="https://user-images.githubusercontent.com/28583602/108802521-dfebeb00-75db-11eb-9f41-6382e7b5feee.png">
+![mypage1](https://user-images.githubusercontent.com/25216200/109096523-04250480-7761-11eb-8959-b74cd6b906d7.png)
+![mypage2](https://user-images.githubusercontent.com/25216200/109096554-1a32c500-7761-11eb-8312-14e106e96263.png)
 
 ## Polyglot
 
@@ -358,6 +365,14 @@ http http://localhost:8088/mypages/1
 
 
 # Ticket - pom.xml
+
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+# Gift - pom.xml
 
 		<dependency>
 			<groupId>org.hsqldb</groupId>
