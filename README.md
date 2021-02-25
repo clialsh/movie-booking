@@ -162,18 +162,18 @@ public interface GiftService {
 
 1. 경품처리
 
-<img width="688" alt="스크린샷 2021-02-23 오전 11 16 37" src="https://user-images.githubusercontent.com/28583602/108794189-ab226880-75c8-11eb-8692-cb06effe8bb2.png">
+![gift_Fail](https://user-images.githubusercontent.com/25216200/109085810-bc48b200-774d-11eb-96d1-657b06aaff94.png)
 
 
 2. 결제서비스 재기동
 ```
-cd ../payment
+cd ../gift
 mvn spring-boot:run
 ```
 
 3. 예매처리
 
-<img width="692" alt="스크린샷 2021-02-23 오전 11 18 23" src="https://user-images.githubusercontent.com/28583602/108794296-da38da00-75c8-11eb-8d86-fce182516fa7.png">
+![gift_restart](https://user-images.githubusercontent.com/25216200/109085877-d8e4ea00-774d-11eb-8daa-c311d4a59ca4.png)
 
 
 ## 비동기식 호출
@@ -284,7 +284,11 @@ spring:
         - id: ticket
           uri: http://localhost:8084
           predicates:
-            - Path=/tickets/** 
+            - Path=/tickets/**
+        - id: gift
+          uri: http://localhost:8085
+          predicates:
+            - Path=/gifts/**  
           
       globalcors:
         corsConfigurations:
@@ -303,9 +307,9 @@ spring:
 
 ```
 # book 서비스의 예매처리
-http POST http://localhost:8088/books qty=2 movieName="soul" seat="1A,2B" totalPrice=10000
+http POST http://localhost:8088/books qty=2 movieName="superman" seat="3A,3B" totalPrice=10000
 
-# ticket 서비스의 출력처리
+# ticket 서비스의 출력 및 경품 당첨 처리
 http PATCH http://localhost:8088/tickets/1 status="Printed"
 
 # 예매 상태 확인
