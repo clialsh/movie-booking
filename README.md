@@ -1,6 +1,7 @@
 # 영화 예매
 
-MSA/DDD/Event Storming/EDA 를 포괄하는 분석/설계/구현/운영 전단계를 커버하도록 구성한 3조 프로젝트 과제입니다.
+MSA/DDD/Event Storming/EDA 를 포괄하는 분석/설계/구현/운영 전단계를 커버하도록 구성한 3조 프로젝트의 개인 과제입니다.
+조별 과제에 티켓 발권 시 경품을 자동으로 부여하고, 수령할 수 있는 시스템이 추가되었습니다. 
 
 - 체크포인트 : https://workflowy.com/s/assessment-check-po/T5YrzcMewfo4J6LW
 
@@ -247,6 +248,7 @@ public class PolicyHandler{
 
 
 2. 예매상태 확인
+
 ![book1](https://user-images.githubusercontent.com/25216200/109092015-2c106a00-7759-11eb-92cc-d8262a1e63b4.png)
 
 3. Ticket 서비스 기동
@@ -256,6 +258,7 @@ mvn spring-boot:run
 ```
 
 4. 예매상태 확인
+
 ![ticket](https://user-images.githubusercontent.com/25216200/109092076-46e2de80-7759-11eb-8b7a-5f5125802947.png)
 
 
