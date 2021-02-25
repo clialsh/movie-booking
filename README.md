@@ -160,50 +160,52 @@ public interface GiftService {
 
 - 경품 (gift) 서비스를 잠시 내려놓음 (ctrl+c)
 
-1. 경품처리
+1. 티켓 출력과 동시에 경품처리
 
 ![gift_Fail](https://user-images.githubusercontent.com/25216200/109085810-bc48b200-774d-11eb-96d1-657b06aaff94.png)
 
 
-2. 결제서비스 재기동
+2. 경품 서비스 재기동
 ```
 cd ../gift
 mvn spring-boot:run
 ```
 
-3. 예매처리
+3. 다시 티켓 출력 처리
 
 ![gift_restart](https://user-images.githubusercontent.com/25216200/109085877-d8e4ea00-774d-11eb-8daa-c311d4a59ca4.png)
 
 
 ## 비동기식 호출
 
-결제가 이루어진 후에 Ticket시스템으로 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리한다.
+경품을 수령하면 Book 시스템으로 이를 알려주는 행위는 동기식이 아니라 비 동기식으로 처리한다.
 
-- 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 예매  되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
+- 이를 위하여 경품 수령 후에 곧바로 경품을 수령했다는 도메인 이벤트를 카프카로 송출한다(Publish)
 
 ```
 package movie;
 
 @Entity
-@Table(name="Book_table")
-public class Book {
+@Table(name="Gift_table")
+public class Gift {
 
  ...
-    @PostPersist
-    public void onPostPersist(){
-        Booked booked = new Booked();
-        BeanUtils.copyProperties(this, booked);
+    @PostUpdate
+    public void onPostUpdate(){
+        if("Taken".equals(status)){
+            Taken taken = new Taken();
+            BeanUtils.copyProperties(this, taken);
+            taken.setStatus("PritedAndTakenGift");
+            taken.publishAfterCommit();
+        }
+    }
 	
 	'''
-	
-        booked.publishAfterCommit();
-    }
 
 }
 ```
 
-- Ticket 서비스에서는 Booked 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
+- Book 서비스에서는 Taken 이벤트에 대해서 이를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
 
 ```
 package movie;
@@ -214,38 +216,38 @@ package movie;
 public class PolicyHandler{
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverBooked_(@Payload Booked booked){
+    public void wheneverTaken_(@Payload Taken taken){
+        if(taken.isMe()){
 
-        if(booked.isMe()){
             System.out.println("======================================");
-            System.out.println("##### listener  : " + booked.toJson());
+            System.out.println("**** listener  : " + taken.toJson());
             System.out.println("======================================");
-            
-            Ticket ticket = new Ticket();
-            ticket.setBookingId(booked.getId());
-            ticket.setMovieName(booked.getMovieName());
-            ticket.setQty(booked.getQty());
-            ticket.setSeat(booked.getSeat());
-            ticket.setStatus("Waiting");
+            bookRepository.findById(taken.getBookingId()).ifPresent((book)->{
+                book.setStatus("PritedAndTakenGift");
+                bookRepository.save(book);
+            });
 
-            ticketRepository.save(ticket);
         }
-    }
+    };
 
 }
 
 ```
-- Ticket 시스템은 예매/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, Ticket 시스템이 유지보수로 인해 잠시 내려간 상태라도 예매 받는데 문제가 없다:
+- 또한, Ticket 시스템은 예매/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, Ticket 시스템이 유지보수로 인해 잠시 내려간 상태라도 예매 받는데 문제가 없다:
 
 - Ticket 서비스를 잠시 내려놓음 (ctrl+c)
 
 1. 예매처리
-<img width="1056" alt="스크린샷 2021-02-23 오후 1 12 47" src="https://user-images.githubusercontent.com/28583602/108801338-d3b25e80-75d8-11eb-9a01-094c0c926c03.png">
-<img width="1441" alt="스크린샷 2021-02-23 오후 1 13 01" src="https://user-images.githubusercontent.com/28583602/108801356-dca33000-75d8-11eb-8a05-fd69895406f4.png">
+![book0](https://user-images.githubusercontent.com/25216200/109092251-890c2000-7759-11eb-9fc9-6c255fb4da3a.png)
+```
+{"eventType":"Paid","timestamp":"20210225105652","id":null,"bookingId":2,"status":"Paid","me":true}
+{"eventType":"Booked","timestamp":"20210225105651","id":2,"qty":2,"seat":"1D,2D","movieName":"“batman”","status":"Registered","totalPrice":10000,"name":null,"me":true}
+```
+
 
 
 2. 예매상태 확인
-<img width="859" alt="스크린샷 2021-02-23 오후 1 15 10" src="https://user-images.githubusercontent.com/28583602/108801469-2a1f9d00-75d9-11eb-8a08-b0a3a64df1ab.png">
+![book1](https://user-images.githubusercontent.com/25216200/109092015-2c106a00-7759-11eb-92cc-d8262a1e63b4.png)
 
 3. Ticket 서비스 기동
 ```
@@ -254,7 +256,7 @@ mvn spring-boot:run
 ```
 
 4. 예매상태 확인
-<img width="882" alt="스크린샷 2021-02-23 오후 1 19 34" src="https://user-images.githubusercontent.com/28583602/108801714-c8136780-75d9-11eb-8a24-1022857d70e4.png">
+![ticket](https://user-images.githubusercontent.com/25216200/109092076-46e2de80-7759-11eb-8b7a-5f5125802947.png)
 
 
 ## Gateway
@@ -307,16 +309,20 @@ spring:
 
 ```
 # book 서비스의 예매처리
-http POST http://localhost:8088/books qty=2 movieName="superman" seat="3A,3B" totalPrice=10000
+http POST http://localhost:8088/books qty=2 movieName="Avengers" seat="3A,3B" totalPrice=10000
 
 # ticket 서비스의 출력 및 경품 당첨 처리
-http PATCH http://localhost:8088/tickets/1 status="Printed"
+http PATCH http://localhost:8088/tickets/2 status="Printed"
 
 # 예매 상태 확인
-http http://localhost:8088/books/1
+http http://localhost:8088/books/3
 
 ```
-<img width="1180" alt="스크린샷 2021-02-23 오후 1 32 28" src="https://user-images.githubusercontent.com/28583602/108802418-94394180-75db-11eb-93ab-c05554651c89.png">
+![avg](https://user-images.githubusercontent.com/25216200/109093624-020c7700-775c-11eb-86ea-4dc099e09c8d.png)
+
+![avg_print](https://user-images.githubusercontent.com/25216200/109093861-692a2b80-775c-11eb-8d49-85a1224d9c4c.png)
+
+![avg_gift](https://user-images.githubusercontent.com/25216200/109093960-9971ca00-775c-11eb-9cdd-57f747f5dcb9.png)
 
 ## Mypage
 
