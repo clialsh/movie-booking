@@ -511,7 +511,7 @@ readinessProbe:
 
 ## Config Map
 
-- deployment.yml에 env 추가
+- buildspec.yaml에 env 추가 (Gift 서비스)
 
 
 ```
@@ -526,7 +526,7 @@ readinessProbe:
 
 ```
 
-- 예매와 동시에 환경변수로 설정한 NAME이 들어가도록 코드를 변경
+- 경품 부여와 함께 환경변수로 설정한 NAME(msg 변수에)이 들어가도록 코드를 변경
 
 ```
 @Id
@@ -534,10 +534,10 @@ readinessProbe:
 
 ...
 
-private String name = System.getenv("NAME");
+private String msg = System.getenv("NAME");
 
 ```
-- configmap.yaml 작성
+- moviecm.yaml 작성
 
 ```
 apiVersion: v1
@@ -546,17 +546,25 @@ metadata:
   name: moviecm
   namespace: movie
 data:
-  text1: HyesunJeon
+  text1: Congratulation Gift
 
 ```
 
-- book pod에 들어가서 환경변수 확인
+- moviecm.yaml 적용
 
-<img width="1118" alt="스크린샷 2021-02-23 오후 7 02 08" src="https://user-images.githubusercontent.com/28583602/108828012-a3cf7f00-7609-11eb-952e-3cfb6e429bae.png">
+```
+kubectl create -f moviecm.yaml
 
-- 예매와 동시에 name에 환경변수 적용 
+```
 
-<img width="1483" alt="스크린샷 2021-02-23 오후 7 03 21" src="https://user-images.githubusercontent.com/28583602/108828129-ceb9d300-7609-11eb-9f9d-228ca82b8f96.png">
+- gift pod에 들어가서 환경변수 확인
+
+![configmap](https://user-images.githubusercontent.com/25216200/109103067-7ef41c80-776d-11eb-8e3c-f72fd80f92ee.png)
+
+
+- 경품 부여 동시에 name(msg에 환경변수 적용 
+
+![configmap2](https://user-images.githubusercontent.com/25216200/109104611-a21fcb80-776f-11eb-87ce-80df32e1e4d5.png)
 
 
 
