@@ -16,7 +16,7 @@ public class Gift {
     private String name;
     private String giftCode;
     private String status;
-
+    private String msg = System.getenv("NAME");
     // @PostPersist
     // public void onPostPersist(){
     //     Applied applied = new Applied();
@@ -97,7 +97,13 @@ public class Gift {
         this.status = status;
     }
 
+    public String getMsg() {
+        return msg;
+    }
 
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
 
 
 }
