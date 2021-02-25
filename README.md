@@ -614,11 +614,12 @@ hystrix:
 * 동시사용자 50명
 * 60초 동안 실시
 
+
+
 ```
 $ siege -c50 -t60S -r10 -v  --content-type "application/json" 'http://ticket:8080/tickets POST {"status":"Printed"}'
 
 
-![cb](https://user-images.githubusercontent.com/25216200/109111539-73f4b880-777c-11eb-9982-41c40f2f283c.png)
 
 ** SIEGE 4.0.5
 ** Preparing 50 concurrent users for battle.
@@ -704,6 +705,8 @@ Longest transaction:            5.20
 Shortest transaction:           0.01
 
 ```
+
+![cb](https://user-images.githubusercontent.com/25216200/109111539-73f4b880-777c-11eb-9982-41c40f2f283c.png)
 
 
 
