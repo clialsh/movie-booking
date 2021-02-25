@@ -65,7 +65,7 @@ public class PolicyHandler{
             System.out.println("**** listener  : " + taken.toJson());
             System.out.println("======================================");
             bookRepository.findById(taken.getBookingId()).ifPresent((book)->{
-                book.setStatus("GiftTakingComplete");
+                book.setStatus("PritedAndTakenGift");
                 bookRepository.save(book);
             });
 
@@ -84,7 +84,7 @@ public class PolicyHandler{
             System.out.println("**** listener  : " + applied.toJson());
             System.out.println("======================================");
             bookRepository.findById(applied.getBookingId()).ifPresent((book)->{
-                book.setStatus("GiftApplied");
+                book.setStatus("PrintedAndGiftApplied");
                 bookRepository.save(book);
             });
 

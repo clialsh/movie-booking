@@ -34,8 +34,8 @@ public class Ticket {
         if("Printed".equals(status)){
              Printed printed = new Printed();
              BeanUtils.copyProperties(this, printed);
-             printed.setStatus("Printed");
-             printed.publishAfterCommit();
+           //  printed.setStatus("Printed");
+           //  printed.publishAfterCommit();
             
 
             movie.external.Gift gift = new movie.external.Gift();

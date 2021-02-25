@@ -30,12 +30,12 @@ public class Gift {
     public void onPrePersist(){
         try {
             Thread.currentThread().sleep((long) (400 + Math.random() * 220));
-            System.out.println("#################");
+            System.out.println("####### Gift #######");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        if("GiftApplied".equals(status)){
+        if("PrintedAndGiftApplied".equals(status)){
             Applied applied = new Applied();
             BeanUtils.copyProperties(this, applied);
             applied.publishAfterCommit();
